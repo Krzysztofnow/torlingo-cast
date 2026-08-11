@@ -4,19 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bingo Torlingo — ekran prezentacyjny</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <link rel="stylesheet" href="styles.css?v=277" />
+  <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <script type="text/javascript">
+    window.onerror = function(message, source, line, column) {
+      try {
+        var el = document.getElementById('current');
+        if (el) {
+          el.textContent = 'BŁĄD';
+          el.style.fontSize = '5vw';
+        }
+        var label = document.getElementById('current-label');
+        if (label) {
+          label.textContent = 'Receiver JS';
+        }
+        var subtitle = document.getElementById('current-subtitle');
+        if (subtitle) {
+          subtitle.textContent = String(message) + ' @' + String(line || '?');
+        }
+      } catch (e) {}
+      return false;
+    };
+  </script>
 </head>
 <body>
   <main id="app" class="screen">
     <section class="left-column">
-      <img class="logo" src="logo.png" alt="Bingo Torlingo" />
-
+      <img class="logo" src="logo.png?v=277" alt="Bingo Torlingo" />
       <div class="panel latest-panel">
         <h2>OSTATNIE LOSOWANE</h2>
         <div id="latest" class="latest-grid"><span class="empty">—</span></div>
       </div>
-
       <div class="panel tempo-panel">
         <div class="clock">◷</div>
         <div>
@@ -45,13 +63,11 @@
         <div id="remaining" class="remaining">75</div>
         <div id="remaining-of" class="small-title">Z 75</div>
       </div>
-
       <div class="panel status-panel">
         <div class="status-title">LOSOWANIE</div>
         <div id="status" class="status manual">RĘCZNE</div>
         <div id="status-icon" class="status-icon">▶</div>
       </div>
-
       <div class="panel bingo-panel">
         <div class="bingo-title">🏆 WOŁAJ BINGO!</div>
         <div class="bingo-text">Prowadzący sprawdzi Twoją planszę.</div>
@@ -60,6 +76,6 @@
     </section>
   </main>
 
-  <script src="receiver.js"></script>
+  <script type="text/javascript" src="receiver.js?v=277"></script>
 </body>
 </html>
