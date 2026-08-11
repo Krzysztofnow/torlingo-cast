@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bingo Torlingo - test Cast Receiver</title>
+  <script src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <style>
+    html, body { width:100%; height:100%; margin:0; background:#071b4a; color:#fff; font-family:Arial,sans-serif; }
+    body { display:flex; align-items:center; justify-content:center; text-align:center; }
+    .box { padding:48px; border:3px solid #f3b51b; border-radius:24px; background:#0b2d76; }
+    h1 { font-size:54px; margin:0 0 18px; color:#ffd028; }
+    p { font-size:30px; margin:8px 0; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>BINGO TORLINGO</h1>
+    <p>TEST ODBIORNIKA GOOGLE CAST</p>
+    <p id="status">Uruchamianie...</p>
+  </div>
+  <script>
+    (function () {
+      try {
+        var context = cast.framework.CastReceiverContext.getInstance();
+        var options = new cast.framework.CastReceiverOptions();
+        options.disableIdleTimeout = true;
+        options.statusText = 'Bingo Torlingo - test';
+        context.start(options);
+        document.getElementById('status').textContent = 'ODBIORNIK URUCHOMIONY';
+      } catch (e) {
+        document.getElementById('status').textContent = 'BŁĄD: ' + String(e && e.message ? e.message : e);
+      }
+    }());
+  </script>
+</body>
+</html>
