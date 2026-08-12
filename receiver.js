@@ -29,14 +29,17 @@
         return null;
       }
     }
+
     if (data && typeof data === 'object') {
       return data;
     }
+
     return null;
   }
 
   function copyState(target, source) {
     var key;
+
     for (key in source) {
       if (Object.prototype.hasOwnProperty.call(source, key)) {
         target[key] = source[key];
@@ -205,40 +208,45 @@
   }
 
   // ------------------------------------------------------------
-  // TEST TTS: sprawdza, czy Web Receiver na telewizorze
-  // udostępnia przeglądarkowy mechanizm speechSynthesis.
-  // Test uruchamia się tylko raz, 3 sekundy po starcie Receivera.
+  // TEST AUDIO MP3
+  // Po uruchomieniu Receivera odtwarza plik audio/pl/42.mp3.
+  // Ten test służy wyłącznie do sprawdzenia dźwięku na telewizorze.
   // ------------------------------------------------------------
-  function testTelevisionTts() {
-    if (!('speechSynthesis' in window) ||
-        typeof SpeechSynthesisUtterance === 'undefined') {
-      console.log('TTS_TEST: speechSynthesis niedostępny');
-      return;
-    }
+  var testAudio = null;
 
+  function testTelevisionAudio() {
     try {
-      var message = new SpeechSynthesisUtterance('Test głosu Bingo Torlingo');
-      message.lang = 'pl-PL';
-      message.rate = 0.9;
-      message.pitch = 1.0;
-      message.volume = 1.0;
+      testAudio = new Audio();
+      testAudio.preload = 'auto';
+      testAudio.volume = 1.0;
+      testAudio.src = 'audio/pl/42.mp3?v=1';
 
-      message.onstart = function () {
-        console.log('TTS_TEST: rozpoczęto');
+      testAudio.oncanplay = function () {
+        console.log('AUDIO_TEST: plik 42.mp3 gotowy do odtworzenia');
       };
 
-      message.onend = function () {
-        console.log('TTS_TEST: zakończono');
+      testAudio.onplay = function () {
+        console.log('AUDIO_TEST: rozpoczęto odtwarzanie 42.mp3');
       };
 
-      message.onerror = function (event) {
-        console.log('TTS_TEST: błąd', event && event.error ? event.error : event);
+      testAudio.onended = function () {
+        console.log('AUDIO_TEST: zakończono odtwarzanie 42.mp3');
       };
 
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(message);
+      testAudio.onerror = function () {
+        var err = testAudio && testAudio.error ? testAudio.error.code : 'unknown';
+        console.log('AUDIO_TEST: błąd odtwarzania, kod:', err);
+      };
+
+      var playPromise = testAudio.play();
+
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(function (error) {
+          console.log('AUDIO_TEST: play() odrzucone:', error);
+        });
+      }
     } catch (e) {
-      console.log('TTS_TEST: wyjątek', e);
+      console.log('AUDIO_TEST: wyjątek:', e);
     }
   }
 
@@ -275,7 +283,7 @@
 
   context.start(options);
 
-  setTimeout(testTelevisionTts, 3000);
+  setTimeout(testTelevisionAudio, 3000);
 
   render();
 }());
