@@ -17,6 +17,12 @@
     remainingSeconds: 5
   };
 
+  var numberAudio = new Audio();
+  numberAudio.preload = 'auto';
+  numberAudio.volume = 1.0;
+
+  var lastSpokenNumber = null;
+
   function byId(id) {
     return document.getElementById(id);
   }
@@ -46,6 +52,49 @@
       }
     }
   }
+
+  function isValidNumber(number) {
+    return typeof number === 'number' &&
+      isFinite(number) &&
+      number >= 1 &&
+      number <= 90 &&
+      Math.floor(number) === number;
+  }
+
+  function playNumber(number) {
+    if (!isValidNumber(number)) {
+      return;
+    }
+
+    if (number === lastSpokenNumber) {
+      return;
+    }
+
+    lastSpokenNumber = number;
+
+    try {
+      numberAudio.pause();
+      numberAudio.currentTime = 0;
+    } catch (e) {
+      // Ignorujemy błąd resetu poprzedniego pliku.
+    }
+
+    numberAudio.src = 'audio/pl/' + number + '.mp3';
+    numberAudio.load();
+
+    var playPromise = numberAudio.play();
+
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(function (error) {
+        console.log('AUDIO: nie udało się odtworzyć numeru ' + number + ':', error);
+      });
+    }
+  }
+
+  numberAudio.onerror = function () {
+    var err = numberAudio && numberAudio.error ? numberAudio.error.code : 'unknown';
+    console.log('AUDIO: błąd pliku, kod:', err, 'src:', numberAudio.src);
+  };
 
   function letterFor75(number) {
     if (number <= 15) { return 'B'; }
@@ -207,49 +256,6 @@
     }
   }
 
-  // ------------------------------------------------------------
-  // TEST AUDIO MP3
-  // Po uruchomieniu Receivera odtwarza plik audio/pl/42.mp3.
-  // Ten test służy wyłącznie do sprawdzenia dźwięku na telewizorze.
-  // ------------------------------------------------------------
-  var testAudio = null;
-
-  function testTelevisionAudio() {
-    try {
-      testAudio = new Audio();
-      testAudio.preload = 'auto';
-      testAudio.volume = 1.0;
-      testAudio.src = 'audio/pl/42.mp3?v=1';
-
-      testAudio.oncanplay = function () {
-        console.log('AUDIO_TEST: plik 42.mp3 gotowy do odtworzenia');
-      };
-
-      testAudio.onplay = function () {
-        console.log('AUDIO_TEST: rozpoczęto odtwarzanie 42.mp3');
-      };
-
-      testAudio.onended = function () {
-        console.log('AUDIO_TEST: zakończono odtwarzanie 42.mp3');
-      };
-
-      testAudio.onerror = function () {
-        var err = testAudio && testAudio.error ? testAudio.error.code : 'unknown';
-        console.log('AUDIO_TEST: błąd odtwarzania, kod:', err);
-      };
-
-      var playPromise = testAudio.play();
-
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(function (error) {
-          console.log('AUDIO_TEST: play() odrzucone:', error);
-        });
-      }
-    } catch (e) {
-      console.log('AUDIO_TEST: wyjątek:', e);
-    }
-  }
-
   context.addCustomMessageListener(NS, function (event) {
     var data = safeParse(event.data);
 
@@ -259,7 +265,15 @@
 
     copyState(state, data);
     state.drawnNumbers = Array.isArray(data.drawnNumbers) ? data.drawnNumbers : [];
+
     render();
+
+    if (state.currentNumber === null || typeof state.currentNumber === 'undefined') {
+      lastSpokenNumber = null;
+      return;
+    }
+
+    playNumber(state.currentNumber);
   });
 
   context.addEventListener(
@@ -282,8 +296,6 @@
   options.statusText = 'Bingo Torlingo';
 
   context.start(options);
-
-  setTimeout(testTelevisionAudio, 3000);
 
   render();
 }());
