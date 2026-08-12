@@ -1,14 +1,66 @@
+@ -0,0 +1,65 @@
 <!doctype html>
-<html>
+<html lang="pl">
 <head>
-  <meta charset="utf-8">
-  <title>Bingo Torlingo - Google Cast official minimal test</title>
-  <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bingo Torlingo — ekran prezentacyjny</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
 </head>
 <body>
-  <cast-media-player></cast-media-player>
-  <script>
-    cast.framework.CastReceiverContext.getInstance().start();
-  </script>
+  <main id="app" class="screen">
+    <section class="left-column">
+      <img class="logo" src="logo.png" alt="Bingo Torlingo" />
+
+      <div class="panel latest-panel">
+        <h2>OSTATNIE LOSOWANE</h2>
+        <div id="latest" class="latest-grid"><span class="empty">—</span></div>
+      </div>
+
+      <div class="panel tempo-panel">
+        <div class="clock">◷</div>
+        <div>
+          <div class="small-title">TEMPO LOSOWANIA</div>
+          <div id="tempo" class="tempo">5 sekund</div>
+          <div id="countdown" class="subtle"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="center-column">
+      <h1>AKTUALNIE WYLOSOWANY NUMER</h1>
+      <div class="current-row">
+        <div id="current" class="current-number">—</div>
+        <div class="current-labels">
+          <div id="current-label" class="current-label">—</div>
+          <div id="current-subtitle" class="current-subtitle">BINGO 75</div>
+        </div>
+      </div>
+      <div id="board" class="board"></div>
+    </section>
+
+    <section class="right-column">
+      <div class="panel remaining-panel">
+        <h2>POZOSTAŁO</h2>
+        <div id="remaining" class="remaining">75</div>
+        <div id="remaining-of" class="small-title">Z 75</div>
+      </div>
+
+      <div class="panel status-panel">
+        <div class="status-title">LOSOWANIE</div>
+        <div id="status" class="status manual">RĘCZNE</div>
+        <div id="status-icon" class="status-icon">▶</div>
+      </div>
+
+      <div class="panel bingo-panel">
+        <div class="bingo-title">🏆 WOŁAJ BINGO!</div>
+        <div class="bingo-text">Prowadzący sprawdzi Twoją planszę.</div>
+        <div class="subtle">Bingo Torlingo</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="receiver.js"></script>
 </body>
 </html>
